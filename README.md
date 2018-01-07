@@ -1,2 +1,2 @@
 # webScrapperBcaGehu
-a simple test web scrapper 
+a simple test web scrapper using beautiful soup
