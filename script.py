@@ -1,43 +1,73 @@
-import bs4
-from urllib.request import urlopen as uReq
-from bs4 import BeautifulSoup as soup
+# Web Scrapping Script for Scrapping Multiple Result from Graphic Era Hill Result Bca course sem 5 mid term
+# Site url http://14.139.239.134/MidResultHillDdn/MidResult.aspx/?rollno={Student Roll No}&course=BCA
+# Poet -- Suraj Negi
 
-#http://14.139.239.134/MidResultHillDdn/StudentPanel.aspx
+import bs4  # Importing BeautifulSoup
+from urllib.request import urlopen as uReq # Importing urlopen(function) from urllib.request(package) and Changing it to uReq for further use
+from bs4 import BeautifulSoup as soup # Importing BeautifulSoup(function) from bs4(package) and Changing it to soup for further use
+
+# Storing Main url in a variable
+my_url = 'http://14.139.239.134/MidResultHillDdn/MidResult.aspx/?rollno=Student_Roll_No&course=BCA'
+
+#------
+#Target Roll No
+# 1021412 - 1021540
+#------
 
 
-my_url = 'http://14.139.239.134/MidResultHillDdn/MidResult.aspx/?rollno=xxx&course=BCA'
-
-#Starting rollno 1021412
-sRoll = 1021412
-#Ending rollno 1021539
+#Last Roll No
 eRoll = 1021540
 
+
+#Starting Roll No
 ini_rollno = 1021411
 
-#everyResult
+# Opening Text File everyResult.txt for Saving Data
+file = open("everyResult.txt","W")
 
-file = open("everyResult.","w")
 
-i=0
-while i<127:
-     
-     dummy_url = my_url
-     ini_rollno = ini_rollno + 1
-     a = str(ini_rollno)
-     dummy_url = dummy_url.replace("xxx",a)
-     dummy_url = dummy_url.replace(" ","")
-     uClient = uReq(dummy_url)
-     page_html = uClient.read()
-     uClient.close()
-     page_soup = soup(page_html,"html.parser")
-     containers = page_soup.findAll("div",{"id":"pnl_sem1"})
-     con = containers[0]
-     str1 = con.get_text()
-     str1 = str1.replace("\n","")
-     str1 = str1.replace("\r","")
-     str1 = str1.replace(" ","")
-     str1 = str1.replace("GraphicEraHillUniversitySocietyArea,ClementTownDehradun,Uttrakhand-248002www.gehu.ac.inSEMESTER:5COURSE:BCABRANCH:NAStatementofMarks,MidTermExamination2017(PROVISIONAL)","")
-     file.write(str1)
-     file.write("\n")
-     i = i+1
-file.close()
+# Loop End When Last roll no == to the prossing last Roll no
+
+while ini_rollno!=eRoll:
+    # A copy Of the original link
+    dummy_url = my_url
+
+    # Incrimenting The initial Roll No by one
+    ini_rollno = ini_rollno + 1
+
+    # Replacing the copy link with the roll no
+    dummy_url = dummy_url.replace("Student_Roll_No",str(ini_rollno))
+
+    # Requesting the url (Opening)
+    uClient = uReq(dummy_url)
+
+    # Reading the content
+    page_html = uClient.read()
+
+    # Closeing the connection
+    uClient.close()
+
+    # Parsing the content to html and saving it
+    page_soup = soup(page_html,"html.parser")
+
+    # Finding the Target content and saving the specific part
+    # -- containers --> ResultSet
+    containers = page_soup.findAll("div",{"id":"pnl_sem1"})
+
+    # saving The first Item
+    con = containers[0]
+
+    # Geting the text content form source
+    str = con.get_text()
+
+    # String manipulation with the data String
+    str = str.replace("\n","")
+    str = str.replace("\r","")
+    str = str.replace(" ","")
+    str = str.replace("GraphicEraHillUniversitySocietyArea,ClementTownDehradun,Uttrakhand-248002www.gehu.ac.inSEMESTER:5COURSE:BCABRANCH:NAStatementofMarks,MidTermExamination2017(PROVISIONAL)","")
+
+    # Writing the data int file
+    file.write(str)
+    file.write("\n")
+
+file.close();
